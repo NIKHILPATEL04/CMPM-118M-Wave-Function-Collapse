@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wave Function Collapse - Tile Model</title>
+    <style>
+      :root {
+        --bg-1: #0f1b1f;
+        --bg-2: #1c2f2b;
+        --ink: #f2f2e9;
+        --muted: #b7c2b3;
+        --accent: #e07a5f;
+        --panel: rgba(20, 32, 28, 0.85);
+        --panel-border: rgba(242, 242, 233, 0.15);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: radial-gradient(1200px 900px at 15% 10%, #2a3a30 0%, transparent 60%),
+                    radial-gradient(900px 800px at 90% 20%, #3a4b36 0%, transparent 55%),
+                    linear-gradient(180deg, var(--bg-1), var(--bg-2));
+        color: var(--ink);
+        font-family: "Space Grotesk", system-ui, sans-serif;
+      }
+      .page {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: minmax(240px, 360px) 1fr;
+        gap: 24px;
+        padding: 28px;
+        align-items: center;
+      }
+      header {
+        background: var(--panel);
+        border: 1px solid var(--panel-border);
+        border-radius: 16px;
+        padding: 20px 18px;
+        backdrop-filter: blur(6px);
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-size: 28px;
+        letter-spacing: 0.5px;
+      }
+      p {
+        margin: 0 0 14px;
+        color: var(--muted);
+        line-height: 1.4;
+        font-size: 14px;
+      }
+      .controls {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .controls button {
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      .controls button:hover {
+        filter: brightness(1.05);
+      }
+      .hint {
+        font-size: 12px;
+        color: var(--muted);
+      }
+      main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      canvas {
+        border: 1px solid var(--panel-border);
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      }
+      @media (max-width: 900px) {
+        .page {
+          grid-template-columns: 1fr;
+          padding: 18px;
+        }
+        header {
+          order: 1;
+        }
+        main {
+          order: 2;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header>
+        <h1>Wave Function Collapse</h1>
+        <p>
+          A WFC tile generator that fills the grid step by step, always choosing 
+          the most restricted spot next. The train tracks snap together the way 
+          they should, forming clean lines and turns as the rules narrow down what 
+          can go where. We also added new tiles like trees and water, each with 
+          their own rules so they tend to clump together instead of scattering 
+          everywhere.
+        </p>
+        <div class="controls">
+          <button type="button" onclick="regenerate()">Regenerate Map</button>
+          <span class="hint">Each run is unique</span>
+        </div>
+      </header>
+      <main></main>
+    </div>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap" />
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
+    <script src="sketch.js"></script>
+  </body>
+</html>
