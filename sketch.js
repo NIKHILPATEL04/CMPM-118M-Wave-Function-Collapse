@@ -177,6 +177,14 @@ function buildTiles() {
     }),
   );
 
+  const roadEnd = makeGraphicTile(
+    ["r", "g", "g", "g"],
+    roadPainter((g) => {
+      g.rect(g.width * 0.35, 0, g.width * 0.3, g.height * 0.5);
+      g.rect(0, g.height * 0.35, g.width, g.height * 0.3);
+    }),
+  );
+
   tiles.push(grass, water, trees);
   WATER_INDEX = 1;
 
@@ -192,6 +200,10 @@ function buildTiles() {
     roadTee.rotate(2),
     roadTee.rotate(3),
     roadCross,
+    roadEnd,
+    roadEnd.rotate(1),
+    roadEnd.rotate(2),
+    roadEnd.rotate(3),
   );
 
   for (const t of tiles) {
@@ -304,6 +316,23 @@ function draw() {
         return;
       }
 
+      const waterNeighbors = countCollapsedWaterNeighbors(i, j);
+      const roadNeighbors = countCollapsedRoadNeighbors(i, j);
+      if (waterNeighbors >= 1 && roadNeighbors === 0) {
+        if (options.includes(WATER_INDEX)) {
+          options = [WATER_INDEX];
+        }
+      }
+
+      if (waterNeighbors >= 2) {
+        if (options.includes(WATER_INDEX)) {
+          options = [WATER_INDEX];
+        } else {
+          startOver();
+          return;
+        }
+      }
+
       nextGrid[index] = new Cell(options);
     }
   }
@@ -328,6 +357,24 @@ function countCollapsedWaterNeighbors(x, y) {
   for (const n of neighbors) {
     if (n && n.collapsed && n.options[0] === WATER_INDEX) {
       count += 1;
+    }
+  }
+  return count;
+}
+
+function countCollapsedRoadNeighbors(x, y) {
+  let count = 0;
+  const up = y > 0 ? grid[x + (y - 1) * DIM] : null;
+  const right = x < DIM - 1 ? grid[x + 1 + y * DIM] : null;
+  const down = y < DIM - 1 ? grid[x + (y + 1) * DIM] : null;
+  const left = x > 0 ? grid[x - 1 + y * DIM] : null;
+  const neighbors = [up, right, down, left];
+  for (const n of neighbors) {
+    if (n && n.collapsed) {
+      const idx = n.options[0];
+      if (tiles[idx].edges.some((e) => e === "r")) {
+        count += 1;
+      }
     }
   }
   return count;
