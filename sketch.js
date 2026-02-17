@@ -224,7 +224,7 @@ function regenerate() {
 }
 
 function setup() {
-  createCanvas(CANVAS_SIZE, CANVAS_SIZE);
+  createCanvas(CANVAS_SIZE, CANVAS_SIZE).parent("canvas-holder");
   buildTiles();
   startOver();
 }
