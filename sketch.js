@@ -318,19 +318,11 @@ function draw() {
 
       const waterNeighbors = countCollapsedWaterNeighbors(i, j);
       const roadNeighbors = countCollapsedRoadNeighbors(i, j);
-      if (waterNeighbors >= 1 && roadNeighbors === 0) {
-        if (options.includes(WATER_INDEX)) {
-          options = [WATER_INDEX];
-        }
+      if (waterNeighbors >= 1 && roadNeighbors === 0 && options.includes(WATER_INDEX)) {
+        options = [WATER_INDEX];
       }
-
-      if (waterNeighbors >= 2) {
-        if (options.includes(WATER_INDEX)) {
-          options = [WATER_INDEX];
-        } else {
-          startOver();
-          return;
-        }
+      if (waterNeighbors >= 2 && options.includes(WATER_INDEX)) {
+        options = [WATER_INDEX];
       }
 
       nextGrid[index] = new Cell(options);
