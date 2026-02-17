@@ -1,15 +1,14 @@
-const DIM = 20;
-const CANVAS_SIZE = 600;
+const DIM = 22;
+const CANVAS_SIZE = 660;
+const TILE_SIZE = 96;
 let tiles = [];
 let grid = [];
-let tileImages = {};
+let WATER_INDEX = 1;
 const EDGE_COMPAT = {
-  "0": ["0", "W", "T"],
-  W: ["W", "0"],
-  T: ["T", "0"],
-  "1": ["1"],
+  g: ["g", "w"],
+  w: ["w", "g"],
+  r: ["r"],
 };
-const WATER_INDEX = 1;
 
 class Tile {
   constructor(img, edges) {
@@ -83,18 +82,117 @@ function compareEdge(a, b) {
   return true;
 }
 
+function makeGraphicTile(sockets, painter) {
+  const g = createGraphics(TILE_SIZE, TILE_SIZE);
+  painter(g);
+  return new Tile(g, sockets);
+}
+
+function drawGrass(g) {
+  g.background("#1b3a1f");
+  g.noStroke();
+  for (let i = 0; i < 35; i += 1) {
+    const x = random(g.width);
+    const y = random(g.height);
+    g.fill(34 + random(-8, 8), 96 + random(-12, 12), 44 + random(-10, 10));
+    g.circle(x, y, random(3, 7));
+  }
+}
+
+function drawTrees(g) {
+  drawGrass(g);
+  g.noStroke();
+  for (let i = 0; i < 5; i += 1) {
+    const x = random(g.width * 0.2, g.width * 0.8);
+    const y = random(g.height * 0.2, g.height * 0.8);
+    g.fill("#214d24");
+    g.circle(x, y, random(14, 18));
+    g.fill("#2f6b32");
+    g.circle(x + random(-4, 4), y + random(-4, 4), random(10, 14));
+  }
+}
+
+function drawWater(g) {
+  g.background("#1f5fa7");
+  g.noStroke();
+  for (let i = 0; i < 30; i += 1) {
+    const x = random(g.width);
+    const y = random(g.height);
+    g.fill(255, 255, 255, 40);
+    g.ellipse(x, y, random(6, 12), random(4, 10));
+  }
+}
+
+function roadPainter(maskFn) {
+  return (g) => {
+    g.background("#1b3a1f");
+    g.noStroke();
+    g.fill("#2a4a2a");
+    g.rect(0, 0, g.width, g.height);
+    g.fill("#2f2f2f");
+    maskFn(g);
+    g.stroke("#d6d6d6");
+    g.strokeWeight(4);
+    g.drawingContext.setLineDash([8, 10]);
+    maskFn(g, true);
+    g.drawingContext.setLineDash([]);
+  };
+}
+
 function buildTiles() {
   tiles = [];
-  const blank = new Tile(tileImages.grass, ["0", "0", "0", "0"]);
-  const water = new Tile(tileImages.water, ["W", "W", "W", "W"]);
-  const tree = new Tile(tileImages.tree, ["T", "T", "T", "T"]);
-  tiles.push(blank, water, tree);
 
-  const tUp = new Tile(tileImages.trackUp, ["1", "1", "0", "1"]);
-  const tRight = new Tile(tileImages.trackRight, ["1", "1", "1", "0"]);
-  const tDown = new Tile(tileImages.trackDown, ["0", "1", "1", "1"]);
-  const tLeft = new Tile(tileImages.trackLeft, ["1", "0", "1", "1"]);
-  tiles.push(tUp, tRight, tDown, tLeft);
+  const grass = makeGraphicTile(["g", "g", "g", "g"], drawGrass);
+  const trees = makeGraphicTile(["g", "g", "g", "g"], drawTrees);
+  const water = makeGraphicTile(["w", "w", "w", "w"], drawWater);
+
+  const roadStraight = makeGraphicTile(
+    ["r", "g", "r", "g"],
+    roadPainter((g) => {
+      g.rect(g.width * 0.35, 0, g.width * 0.3, g.height);
+    }),
+  );
+
+  const roadCorner = makeGraphicTile(
+    ["r", "r", "g", "g"],
+    roadPainter((g) => {
+      g.rect(g.width * 0.35, 0, g.width * 0.3, g.height * 0.65);
+      g.rect(g.width * 0.35, g.height * 0.35, g.width * 0.65, g.height * 0.3);
+    }),
+  );
+
+  const roadTee = makeGraphicTile(
+    ["r", "r", "g", "r"],
+    roadPainter((g) => {
+      g.rect(g.width * 0.35, 0, g.width * 0.3, g.height * 0.65);
+      g.rect(0, g.height * 0.35, g.width, g.height * 0.3);
+    }),
+  );
+
+  const roadCross = makeGraphicTile(
+    ["r", "r", "r", "r"],
+    roadPainter((g) => {
+      g.rect(g.width * 0.35, 0, g.width * 0.3, g.height);
+      g.rect(0, g.height * 0.35, g.width, g.height * 0.3);
+    }),
+  );
+
+  tiles.push(grass, water, trees);
+  WATER_INDEX = 1;
+
+  tiles.push(
+    roadStraight,
+    roadStraight.rotate(1),
+    roadCorner,
+    roadCorner.rotate(1),
+    roadCorner.rotate(2),
+    roadCorner.rotate(3),
+    roadTee,
+    roadTee.rotate(1),
+    roadTee.rotate(2),
+    roadTee.rotate(3),
+    roadCross,
+  );
 
   for (const t of tiles) {
     t.analyze(tiles);
@@ -111,18 +209,6 @@ function startOver() {
 function regenerate() {
   startOver();
   loop();
-}
-
-function preload() {
-  tileImages = {
-    grass: loadImage("grass.png"),
-    trackUp: loadImage("track_t_up.png"),
-    trackRight: loadImage("track_t_right.png"),
-    trackDown: loadImage("track_t_down.png"),
-    trackLeft: loadImage("track_t_left.png"),
-    water: loadImage("water.png"),
-    tree: loadImage("tree.png"),
-  };
 }
 
 function setup() {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -17,12 +17,14 @@
       * {
         box-sizing: border-box;
       }
-      html, body {
+      html,
+      body {
         margin: 0;
         padding: 0;
-        background: radial-gradient(1200px 900px at 15% 10%, #2a3a30 0%, transparent 60%),
-                    radial-gradient(900px 800px at 90% 20%, #3a4b36 0%, transparent 55%),
-                    linear-gradient(180deg, var(--bg-1), var(--bg-2));
+        background:
+          radial-gradient(1200px 900px at 15% 10%, #2a3a30 0%, transparent 60%),
+          radial-gradient(900px 800px at 90% 20%, #3a4b36 0%, transparent 55%),
+          linear-gradient(180deg, var(--bg-1), var(--bg-2));
         color: var(--ink);
         font-family: "Space Grotesk", system-ui, sans-serif;
       }
@@ -103,12 +105,12 @@
       <header>
         <h1>Wave Function Collapse</h1>
         <p>
-          A WFC tile generator that fills the grid step by step, always choosing 
-          the most restricted spot next. The train tracks snap together the way 
-          they should, forming clean lines and turns as the rules narrow down what 
-          can go where. We also added new tiles like trees and water, each with 
-          their own rules so they tend to clump together instead of scattering 
-          everywhere.
+          A WFC tile generator that fills the grid step by step, always choosing
+          the most restricted spot next. The train tracks snap together the way
+          they should, forming clean lines and turns as the rules narrow down
+          what can go where. We also added new tiles like trees and water, each
+          with their own rules so they tend to clump together instead of
+          scattering everywhere.
         </p>
         <div class="controls">
           <button type="button" onclick="regenerate()">Regenerate Map</button>
@@ -117,7 +119,10 @@
       </header>
       <main></main>
     </div>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600&display=swap"
+    />
     <script src="https://cdn.jsdelivr.net/npm/p5@1.9.0/lib/p5.min.js"></script>
     <script src="sketch.js"></script>
   </body>
